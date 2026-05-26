@@ -31,15 +31,23 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/template-sph.docx ./template-sph.docx
 COPY --from=builder /app/uploads ./uploads
 
+# Copy drizzle migration files
+COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+COPY --from=builder /app/src/db ./src/db
+
 # Buat folder uploads kalau belum ada
 RUN mkdir -p uploads/downloads
+
+# Copy startup script
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
 
 # Port default (bisa di-override via PORT env var di Coolify)
 EXPOSE 3000
 
 # Health check untuk Coolify/Docker
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD wget -qO- http://localhost:3000/health || exit 1
 
-# Start server production
-CMD ["node", "dist/server.cjs"]
+# Start via script (migrate dulu, lalu server)
+CMD ["sh", "./start.sh"]
