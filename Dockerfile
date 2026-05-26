@@ -46,7 +46,7 @@ RUN chmod +x ./start.sh
 EXPOSE 3000
 
 # Health check untuk Coolify/Docker
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
   CMD wget -qO- http://localhost:3000/health || exit 1
 
 # Start via script (migrate dulu, lalu server)
