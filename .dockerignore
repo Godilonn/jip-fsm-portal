@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Build output
+dist/
+
+# Environment — JANGAN commit ke GitHub, set di Coolify
+.env
+.env.local
+.env.*.local
+
+# Dev tools
+.vscode/
+.idea/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Temp files
+~$*
+*.tmp

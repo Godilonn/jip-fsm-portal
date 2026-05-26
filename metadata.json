@@ -1,0 +1,6 @@
+{
+  "name": "Sistem Manajemen Servis Printer",
+  "description": "Sistem Manajemen Servis Printer Berbasis Agen AI untuk mengelola penerimaan servis printer, smart diagnosa kerusakan, administrasi SPH, manajemen logistik, dan inventori barang sparepart, ATK, maupun aset demo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
