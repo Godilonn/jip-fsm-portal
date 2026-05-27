@@ -146,13 +146,24 @@ export default function ServiceFormModal({
               onChange={(e) => setField("customer", e.target.value)}
               placeholder="Contoh: Dinas Kesehatan Jatim"
             />
-            <SelectInput
-              label="Model Device"
-              required
-              value={form.device}
-              onChange={(e) => setField("device", e.target.value)}
-              options={DEVICE_OPTIONS}
-            />
+            <div>
+              <SelectInput
+                label="Model Device"
+                required
+                value={form.device.startsWith("Lainnya") ? "Lainnya" : form.device}
+                onChange={(e) => setField("device", e.target.value)}
+                options={DEVICE_OPTIONS}
+              />
+              {(form.device === "Lainnya" || form.device.startsWith("Lainnya:")) && (
+                <input
+                  type="text"
+                  placeholder="Tulis nama device..."
+                  value={form.device.startsWith("Lainnya:") ? form.device.slice(9) : ""}
+                  onChange={(e) => setField("device", e.target.value ? `Lainnya: ${e.target.value}` : "Lainnya")}
+                  className="mt-2 w-full text-sm border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 rounded-xl px-3 py-2 outline-none transition-all"
+                />
+              )}
+            </div>
             <TextInput
               label="Serial Number (SN)"
               required

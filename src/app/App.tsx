@@ -102,10 +102,15 @@ function InnerApp() {
   const crudFetch = async (url: string, method: string, body?: object): Promise<void> => {
     const res = await fetch(url, {
       method,
+      credentials: "include",
       headers: body ? { "Content-Type": "application/json" } : undefined,
       body: body ? JSON.stringify(body) : undefined,
     });
-    if (res.ok) await fetchAllData();
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData?.error || `Request gagal (${res.status})`);
+    }
+    await fetchAllData();
   };
 
   // Printer Services

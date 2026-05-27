@@ -314,6 +314,6 @@ export const ALL_SERVICE_STATUSES: ServiceStatus[] = [
  * Daftar device yang dikenali sistem JIP.
  */
 export const JIP_DEVICES = [
-  "Em2s", "CR707", "SR200", "SD307", "CR805",
-  "mini PC", "Alat rekam", "Lainnya",
+  "EM2S", "CR707", "SR200", "SD307", "CR805",
+  "Mini PC", "Alat Rekam", "Lainnya",
 ] as const;
