@@ -26,6 +26,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
+import { useApp } from "../../../store/AppContext";
 
 // UI Primitif
 import Button from "../../../components/ui/Button";
@@ -77,6 +78,9 @@ export default function PenerimaanPrinter({
   searchTerm: propSearchTerm,
   onSearchTermChange,
 }: PenerimaanPrinterProps) {
+
+  // ── Toast dari global context ────────────────────────────────────────────
+  const { addToast } = useApp();
 
   // ── Search state (controlled dari parent atau local) ─────────────────────
   const [localSearch, setLocalSearch] = useState("");
@@ -148,8 +152,12 @@ export default function PenerimaanPrinter({
   const handleFormSubmit = async (payload: Omit<PrinterService, "id">, editingId?: string) => {
     if (editingId) {
       await onUpdateService(editingId, payload);
+      // Refresh panel kanan setelah edit
+      setSelectedService((prev) => prev?.id === editingId ? { ...prev, ...payload } : prev);
+      addToast("✅ Tiket Diperbarui", `Data tiket ${editingId} berhasil disimpan.`, "success");
     } else {
       await onAddService(payload);
+      addToast("✅ Printer Terdaftar", `Tiket baru untuk ${payload.customer} berhasil dibuat.`, "success");
     }
   };
 
@@ -163,6 +171,9 @@ export default function PenerimaanPrinter({
     try {
       await onDeleteService(deleteTarget);
       if (selectedService?.id === deleteTarget) setSelectedService(null);
+      addToast("🗑️ Tiket Dihapus", `Tiket ${deleteTarget} berhasil dihapus dari sistem.`, "info");
+    } catch {
+      addToast("❌ Gagal Hapus", "Terjadi kesalahan saat menghapus tiket.", "error");
     } finally {
       setIsDeleting(false);
       setDeleteTarget(null);
@@ -460,25 +471,4 @@ function ServiceDetailSummary({ service, currentUser, onTriggerEvent, onCreateSp
             📄 Buat SPH
           </Button>
           <Button variant="secondary" size="xs" onClick={() => onSendToLogistics(service, "Workshop JIP")} className="justify-center">
-            🚚 Kirim Logistik
-          </Button>
-          <Button variant="secondary" size="xs" onClick={() => onSelectForChat(service.device)} className="col-span-2 justify-center">
-            🤖 AI Troubleshoot Chat
-          </Button>
-        </div>
-      </div>
-
-      {/* Action Logs */}
-      {service.actionLogs && service.actionLogs.length > 0 && (
-        <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Log Aktivitas</p>
-          <div className="bg-slate-950 rounded-xl p-3 max-h-32 overflow-y-auto space-y-0.5">
-            {[...service.actionLogs].reverse().map((log, i) => (
-              <p key={i} className="text-[9px] font-mono text-emerald-400 leading-relaxed">{log}</p>
-            ))}
-          </div>
-        </div>
-      )}
-    </Card>
-  );
-}
+            🚚 Kir
