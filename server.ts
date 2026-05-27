@@ -416,8 +416,18 @@ app.get("/api/sph/:id/docx", async (req, res) => {
         total_harga:  fmtRp(item.jumlah ?? (item.qty ?? 1) * (item.harga ?? 0)),
       })),
       // Form Penerimaan Service
+      device:               service?.device || "-",
       serial_number:        service?.serialNumber || "-",
       keluhan:              service?.keluhan || "-",
+      // Device checkboxes
+      dev_em2s:   cek(service?.device === "Em2s"),
+      dev_cr707:  cek(service?.device === "CR707"),
+      dev_sr200:  cek(service?.device === "SR200"),
+      dev_sd307:  cek(service?.device === "SD307"),
+      dev_cr805:  cek(service?.device === "CR805"),
+      dev_minipc: cek(service?.device === "mini PC"),
+      dev_rekam:  cek(service?.device === "Alat rekam"),
+      dev_lain:   cek(service?.device === "Lainnya"),
       // Kelengkapan checkboxes (☒ = ada, ☐ = tidak)
       kel_ribbon:   cek(kelengkapan.ribbon),
       kel_film:     cek(kelengkapan.film),

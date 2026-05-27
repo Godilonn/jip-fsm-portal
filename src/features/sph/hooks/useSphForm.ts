@@ -48,6 +48,9 @@ const INIT_PART: PartInputState = {
   customQty: 1,
 };
 
+// Helper agar setelah reset, harga field benar-benar kosong (bukan 0)
+export const EMPTY_PART = INIT_PART;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // HOOK
 // ─────────────────────────────────────────────────────────────────────────────
@@ -114,8 +117,14 @@ export function useSphForm() {
   // ── Add line item ───────────────────────────────────────────────────────
   const addItem = useCallback((): string | null => {
     const { customPartName, customPartNo, customSatuan, customPrice, customQty } = partInput;
-    if (!customPartName || customPrice <= 0 || customQty <= 0) {
-      return "Isi rincian part dengan lengkap: nama, harga, dan qty wajib diisi.";
+    if (!customPartName.trim()) {
+      return "Nama part wajib diisi.";
+    }
+    if (customPrice <= 0) {
+      return "Harga satuan harus lebih dari 0.";
+    }
+    if (customQty <= 0) {
+      return "Qty harus lebih dari 0.";
     }
     const newItem: Omit<SPHItem, "id"> = {
       itemNumber: String(items.length + 1),
@@ -144,8 +153,8 @@ export function useSphForm() {
   const toPayload = useCallback((): Omit<SPH, "id"> | null => {
     if (!form.nomorSurat || !form.dinasMana || items.length === 0) return null;
     const subtotal = calcSubtotal(items.map((i) => ({ jumlah: i.jumlah })));
-    const ppn = form.statusCharge === "Bayar" ? calcPpn(subtotal) : 0;
-    const total = subtotal + ppn;
+    const ppn = 0; // PPN dihapus sesuai kebijakan
+    const total = subtotal;
     return {
       nomorSurat: form.nomorSurat,
       tanggal: form.tanggal,

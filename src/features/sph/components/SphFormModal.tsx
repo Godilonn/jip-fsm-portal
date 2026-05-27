@@ -213,8 +213,8 @@ export default function SphFormModal({
   // ── Running total ──────────────────────────────────────────────────────────
 
   const subtotal = items.reduce((acc, it) => acc + it.jumlah, 0);
-  const ppn = form.statusCharge === "Bayar" ? Math.round(subtotal * 0.11) : 0;
-  const total = subtotal + ppn;
+  const ppn = 0; // PPN dihapus sesuai kebijakan
+  const total = subtotal;
 
   const partIsLocked = partInput.selectedPartId !== "" && partInput.selectedPartId !== "custom";
 
@@ -379,7 +379,7 @@ export default function SphFormModal({
                         onChange={(e) => setField("statusCharge", e.target.value as SPH["statusCharge"])}
                         className="w-full text-sm border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 rounded-xl px-3 py-2.5 outline-none bg-white"
                       >
-                        <option value="Bayar">Bayar — Dikenakan PPN 11%</option>
+                        <option value="Bayar">Bayar (Charged)</option>
                         <option value="Free of Charge">Free of Charge (F.O.C) — Gratis</option>
                         <option value="Garansi">Garansi — Warranty Claim</option>
                       </select>
@@ -477,11 +477,6 @@ export default function SphFormModal({
                       <div className="col-span-2 sm:col-span-2">
                         <label className="block text-[10px] font-bold text-purple-900 mb-1">
                           Harga Satuan (Rp)
-                          {form.statusCharge === "Bayar" && (
-                            <span className="ml-1.5 text-[9px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 normal-case tracking-normal">
-                              Ex. PPN
-                            </span>
-                          )}
                         </label>
                         <input
                           type="number"
@@ -490,11 +485,6 @@ export default function SphFormModal({
                           disabled={partIsLocked}
                           className="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 outline-none font-mono disabled:bg-slate-100 focus:border-purple-400"
                         />
-                        {form.statusCharge === "Bayar" && (
-                          <p className="text-[9px] text-amber-600 mt-0.5">
-                            ⚠️ Harga belum termasuk PPN 11% — ditambahkan otomatis saat total dihitung.
-                          </p>
-                        )}
                       </div>
                       <div className="sm:col-span-1 flex items-end">
                         <button
@@ -577,16 +567,6 @@ export default function SphFormModal({
 
                         {/* Running total */}
                         <div className="bg-slate-50 border-t border-slate-200 px-3 py-2.5 space-y-1">
-                          <div className="flex justify-between text-[11px] text-slate-500">
-                            <span>Subtotal</span>
-                            <span className="font-mono">{formatRp(subtotal)}</span>
-                          </div>
-                          {form.statusCharge === "Bayar" && (
-                            <div className="flex justify-between text-[11px] text-slate-500">
-                              <span>PPN 11%</span>
-                              <span className="font-mono">{formatRp(ppn)}</span>
-                            </div>
-                          )}
                           <div className="flex justify-between text-sm font-bold text-slate-900 pt-1 border-t border-slate-200">
                             <span>Total</span>
                             <span className="font-mono text-indigo-700">
@@ -651,12 +631,6 @@ export default function SphFormModal({
                           <span>Subtotal</span>
                           <span className="font-mono">{formatRp(subtotal)}</span>
                         </div>
-                        {form.statusCharge === "Bayar" && (
-                          <div className="flex justify-between text-xs text-slate-500">
-                            <span>PPN 11%</span>
-                            <span className="font-mono">{formatRp(ppn)}</span>
-                          </div>
-                        )}
                         <div className="flex justify-between text-base font-black text-slate-900 pt-1 border-t border-slate-200">
                           <span>TOTAL</span>
                           <span className="font-mono text-indigo-700">
