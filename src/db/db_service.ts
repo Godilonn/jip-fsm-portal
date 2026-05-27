@@ -354,6 +354,7 @@ export const dbService = {
         return newRecord;
       } catch (err) {
         console.error("Drizzle Insert Error, falling back:", err);
+        throw err; // Re-throw agar server kembalikan 500, klien lihat error
       }
     }
 
@@ -484,6 +485,7 @@ export const dbService = {
         return newRecord;
       } catch (err) {
         console.error("Drizzle SPH Insert Error:", err);
+        throw err; // Re-throw agar server kembalikan 500, bukan pura-pura 201
       }
     }
 
@@ -847,10 +849,4 @@ export const dbService = {
         await db.delete(assetsTable).where(eq(assetsTable.id, id));
       } catch (err) {
         console.error("Drizzle Demo Asset Delete Error:", err);
-      }
-    }
-    const lenBefore = memAsetDemo.length;
-    memAsetDemo = memAsetDemo.filter(d => d.id !== id);
-    return memAsetDemo.length < lenBefore;
-  }
-};
+      
