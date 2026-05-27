@@ -29,6 +29,7 @@ export const printerServices = pgTable("printer_services", {
   slaTimeStart: text("sla_time_start"),
   isLocked: boolean("is_locked").notNull().default(false),
   assignee: text("assignee"),
+  ticketType: text("ticket_type").notNull().default("INCIDENT"),
 });
 
 // 2. SPH (Offered Quotations) Table

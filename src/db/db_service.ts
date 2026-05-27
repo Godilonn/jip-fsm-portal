@@ -282,6 +282,18 @@ let memAsetDemo: any[] = [
 ];
 
 // ============================================================================
+// ID GENERATOR — timestamp-based, never collides across server restarts
+// ============================================================================
+
+function genId(prefix: string): string {
+  // e.g. SRV-2026-L4X9K2  (year + base36 timestamp tail)
+  const year = new Date().getFullYear();
+  const ts   = Date.now().toString(36).toUpperCase().slice(-5);
+  const rand = Math.random().toString(36).toUpperCase().slice(2, 5);
+  return `${prefix}-${year}-${ts}${rand}`;
+}
+
+// ============================================================================
 // DATABASE METHODS WITH ENHANCED ON-THE-FLY DRIZZLE SUPPORT
 // ============================================================================
 
@@ -300,7 +312,7 @@ export const dbService = {
   },
 
   addPrinter: async (data: any): Promise<any> => {
-    const id = `SRV-${String(memPrinterServices.length + 1).padStart(3, "0")}`;
+    const id = genId("SRV");
     const newRecord = { id, ...data };
     
     if (isDbConfigured()) {
@@ -335,7 +347,8 @@ export const dbService = {
           slaStatus: data.slaStatus || "START",
           slaTimeStart: data.slaTimeStart || new Date().toISOString(),
           isLocked: data.isLocked || false,
-          assignee: data.assignee
+          assignee: data.assignee,
+          ticketType: data.ticketType || "INCIDENT",
         });
         memPrinterServices.unshift(newRecord);
         return newRecord;
@@ -353,6 +366,15 @@ export const dbService = {
       try {
         const db = getDb();
         const updateData: any = {};
+        // Identity fields (from ServiceFormModal edit)
+        if (data.customer !== undefined) updateData.customer = data.customer;
+        if (data.device !== undefined) updateData.device = data.device;
+        if (data.serialNumber !== undefined) updateData.serialNumber = data.serialNumber;
+        if (data.keluhan !== undefined) updateData.keluhan = data.keluhan;
+        if (data.tanggalTerima !== undefined) updateData.tanggalTerima = data.tanggalTerima;
+        if (data.statusGaransi !== undefined) updateData.statusGaransi = data.statusGaransi;
+        if (data.ticketType !== undefined) updateData.ticketType = data.ticketType;
+        // Operational fields
         if (data.statusServis !== undefined) updateData.statusServis = data.statusServis;
         if (data.hasilPengecekan !== undefined) updateData.hasilPengecekan = data.hasilPengecekan;
         if (data.catatanRekomendasi !== undefined) updateData.catatanRekomendasi = data.catatanRekomendasi;
@@ -415,7 +437,7 @@ export const dbService = {
   },
 
   addSph: async (data: any): Promise<any> => {
-    const id = `SPH-2026-${String(memSPHList.length + 1).padStart(3, "0")}`;
+    const id = genId("SPH");
     const newRecord = { id, ...data };
 
     if (isDbConfigured()) {
@@ -544,7 +566,7 @@ export const dbService = {
   },
 
   addLogistics: async (data: any): Promise<any> => {
-    const id = `LOG-${String(memBarangAktif.length + 1).padStart(3, "0")}`;
+    const id = genId("LOG");
     const newRecord = { id, ...data };
 
     if (isDbConfigured()) {
@@ -620,7 +642,7 @@ export const dbService = {
   },
 
   addSparepart: async (data: any): Promise<any> => {
-    const id = `SP-${String(memSpareparts.length + 1).padStart(3, "0")}`;
+    const id = genId("SP");
     const status = data.stok === 0 ? "Habis" : data.stok <= 2 ? "Stok Rendah" : "Tersedia";
     const newRecord = { id, status, ...data };
 
@@ -698,7 +720,7 @@ export const dbService = {
   },
 
   addAtk: async (data: any): Promise<any> => {
-    const id = `ATK-${String(memAtkList.length + 1).padStart(3, "0")}`;
+    const id = genId("ATK");
     const status = data.stok === 0 ? "Habis" : data.stok <= 3 ? "Stok Rendah" : "Tersedia";
     const newRecord = { id, status, ...data };
 
@@ -773,7 +795,7 @@ export const dbService = {
   },
 
   addDemoAsset: async (data: any): Promise<any> => {
-    const id = `DEMO-${String(memAsetDemo.length + 1).padStart(3, "0")}`;
+    const id = genId("DEMO");
     const newRecord = { id, ...data };
 
     if (isDbConfigured()) {
