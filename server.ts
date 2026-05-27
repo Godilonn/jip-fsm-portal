@@ -427,6 +427,7 @@ app.get("/api/sph/:id/docx", async (req, res) => {
       dev_cr805:  cek(service?.device === "CR805"),
       dev_minipc: cek(service?.device === "Mini PC"),
       dev_rekam:  cek(service?.device === "Alat Rekam"),
+      dev_ds:     cek(false), // Entrust DS — tidak ada di dropdown, selalu kosong
       dev_lain:   cek(!["EM2S","CR707","SR200","SD307","CR805","Mini PC","Alat Rekam"].includes(service?.device || "")),
       // Kelengkapan checkboxes (☒ = ada, ☐ = tidak)
       kel_ribbon:   cek(kelengkapan.ribbon),
@@ -950,4 +951,49 @@ Berikan analisis dalam format JSON terstruktur dengan kunci:
   }
 });
 
-// ── Simulated diagnostics fallback ───────────────────────
+// ── Simulated diagnostics fallback ────────────────────────────────────────────
+function getSimulatedDiagnostics(device: string, keluhan: string, _log: any) {
+  return {
+    analisis: `[SIMULASI] Printer ${device} mengalami masalah berdasarkan keluhan: "${keluhan}". Analisis lengkap memerlukan GEMINI_API_KEY yang valid.`,
+    rekomendasiTindakan: "1. Restart printer dan periksa koneksi kabel.\n2. Periksa ribbon dan film.\n3. Jalankan cleaning cycle dari software driver.\n4. Jika masalah berlanjut, kirim ke Service Center.",
+    sparepartsDibutuhkan: [
+      { namaPart: "Cleaning Kit", partNumber: "CK-UNIV-001", estimasiQty: 1, estimasiHarga: 150000 },
+    ],
+    keputusanMandat: "Pandu",
+  };
+}
+
+
+// ── Health check (untuk cloud platform) ────────────────────────────────
+app.get("/health", (_req, res) => res.json({ status: "ok" }));
+
+// ── Start server ────────────────────────────────────────────────────────────────
+async function startServer() {
+  if (IS_PROD) {
+    // Production: serve built static files dari dist/
+    // esbuild --format=cjs selalu inject __dirname; di ESM dev mode pakai process.cwd()/dist
+    const distPath = path.resolve(process.cwd(), "dist");
+    app.use(express.static(distPath));
+    // SPA fallback — semua route non-API dikembalikan ke index.html
+    app.get("*", (req, res) => {
+      if (!req.path.startsWith("/api") && !req.path.startsWith("/uploads")) {
+        res.sendFile(path.join(distPath, "index.html"));
+      }
+    });
+  } else {
+    // Development: gunakan Vite dev server dengan HMR
+    const { createServer: createViteServer } = await import("vite");
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
+    });
+    app.use(vite.middlewares);
+  }
+
+  app.listen(PORT, () => {
+    const mode = IS_PROD ? "production" : "development";
+    console.log(`\u2705 JIP Service Center [${mode}] running at http://localhost:${PORT}`);
+  });
+}
+
+startServer().catch(console.error);

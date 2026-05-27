@@ -225,46 +225,6 @@ export default function StatsDashboard({
       {dashboardTab === "analytics" && (
         <div className="space-y-6">
 
-          {/* Role override demo widget — MANAGER only */}
-          {currentUserRole === "MANAGER" && (
-            <div className="bg-slate-50 border border-dashed border-slate-300 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 text-[10px] font-black tracking-widest text-slate-500 uppercase font-mono">
-                  <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-                  <span>DEMO — PRATINJAU TAMPILAN ROLE</span>
-                </div>
-                <p className="text-xs text-slate-500 leading-normal max-w-lg">
-                  Bandingkan tampilan antar role. Beralih antara{" "}
-                  <strong className="text-sky-600">Tampilan Teknisi</strong> dan{" "}
-                  <strong className="text-indigo-600">Tampilan Manajer</strong>.
-                </p>
-              </div>
-              <div className="flex bg-white p-1 rounded-xl border border-slate-200 shrink-0 shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => setActiveViewRole("TECHNICIAN")}
-                  className={`px-3.5 py-2 rounded-lg text-xs font-bold tracking-wider transition-all uppercase flex items-center gap-1.5 ${
-                    activeViewRole === "TECHNICIAN"
-                      ? "bg-sky-600 text-white shadow-sm"
-                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                  }`}
-                >
-                  <Wrench size={13} /> Teknisi
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveViewRole("MANAGER")}
-                  className={`px-3.5 py-2 rounded-lg text-xs font-bold tracking-wider transition-all uppercase flex items-center gap-1.5 ${
-                    activeViewRole === "MANAGER"
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                  }`}
-                >
-                  <BarChart3 size={13} /> Manajer
-                </button>
-              </div>
-            </div>
-          )}
 
           {/* ── SCENARIO 1: TECHNICIAN VIEW ──────────────────────────────── */}
           {activeViewRole === "TECHNICIAN" && (

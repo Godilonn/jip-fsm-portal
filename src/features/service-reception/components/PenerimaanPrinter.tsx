@@ -471,4 +471,25 @@ function ServiceDetailSummary({ service, currentUser, onTriggerEvent, onCreateSp
             📄 Buat SPH
           </Button>
           <Button variant="secondary" size="xs" onClick={() => onSendToLogistics(service, "Workshop JIP")} className="justify-center">
-            🚚 Kir
+            🚚 Kirim Logistik
+          </Button>
+          <Button variant="secondary" size="xs" onClick={() => onSelectForChat(service.device)} className="col-span-2 justify-center">
+            🤖 AI Troubleshoot Chat
+          </Button>
+        </div>
+      </div>
+
+      {/* Action Logs */}
+      {service.actionLogs && service.actionLogs.length > 0 && (
+        <div>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Log Aktivitas</p>
+          <div className="bg-slate-950 rounded-xl p-3 max-h-32 overflow-y-auto space-y-0.5">
+            {[...service.actionLogs].reverse().map((log, i) => (
+              <p key={i} className="text-[9px] font-mono text-emerald-400 leading-relaxed">{log}</p>
+            ))}
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
