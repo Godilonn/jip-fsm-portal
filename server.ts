@@ -679,13 +679,50 @@ app.delete("/api/inventory/demo-assets/:id", async (req, res) => {
 // TEMPLATE DOWNLOAD — file Excel pre-filled data sparepart JIP
 // ─────────────────────────────────────────────────────────────────────────────
 
-app.get("/api/inventory/spareparts/template", (_req, res) => {
-  const templatePath = path.join(process.cwd(), "uploads", "template-import-sparepart.csv");
-  if (!fs.existsSync(templatePath)) {
-    return res.status(404).json({ error: "Template belum tersedia." });
+app.get("/api/inventory/spareparts/template", async (_req, res) => {
+  try {
+    // @ts-ignore
+    const XLSX = await import("xlsx");
+
+    // Header kolom
+    const headers = [
+      "Kode Item", "Part Number", "Nama Barang", "Kategori", "Stok", "Harga", "Untuk Mesin Apa"
+    ];
+
+    // Coba baca dari CSV yang ada, lalu convert ke xlsx
+    const csvPath = path.join(process.cwd(), "uploads", "template-import-sparepart.csv");
+    let dataRows: any[][] = [];
+
+    if (fs.existsSync(csvPath)) {
+      const csvContent = fs.readFileSync(csvPath, "utf-8");
+      const lines = csvContent.split("\n").filter(l => l.trim());
+      // Skip header baris pertama CSV, ambil data
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(",").map(c => c.replace(/^"|"$/g, "").trim());
+        if (cols.length >= 1 && cols[0]) dataRows.push(cols);
+      }
+    }
+
+    // Buat worksheet
+    const wsData = [headers, ...dataRows];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // Style header (lebar kolom)
+    ws["!cols"] = [
+      { wch: 12 }, { wch: 18 }, { wch: 40 }, { wch: 18 },
+      { wch: 8 },  { wch: 14 }, { wch: 20 },
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sparepart");
+
+    const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", "attachment; filename=\"template-import-sparepart.xlsx\"");
+    res.send(buffer);
+  } catch (err) {
+    res.status(500).json({ error: "Gagal generate template xlsx." });
   }
-  res.setHeader("Content-Type", "text/csv; charset=utf-8");
-  res.download(templatePath, "template-import-sparepart.csv");
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

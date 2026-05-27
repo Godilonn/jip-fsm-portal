@@ -122,18 +122,18 @@ async function downloadTemplate() {
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
     a.href     = url;
-    a.download = "template-import-sparepart.csv";
+    a.download = "template-import-sparepart.xlsx";
     a.click();
     URL.revokeObjectURL(url);
   } catch {
     // Fallback CSV minimal jika server tidak tersedia
-    const headers = ["Kode Item","Part Number","Kode Barang Asli","Nama Barang","Kategori","Stok","Harga (Ex PPN)","Untuk Mesin Apa"];
+    const headers = ["Kode Item","Part Number","Nama Barang","Kategori","Stok","Harga","Untuk Mesin Apa"];
     const sample  = [
-      ["148392","3169380201","534717-999","300 Dpi Main Board Assembly Fru","Circuit Boards","0","12100000","SR200"],
-      ["148399","3169289802","534717-187","Feed Roller","Rollers","0","2288000","SR200"],
+      ["148392","3169380201","300 Dpi Main Board Assembly Fru","Circuit Boards","0","12100000","SR200"],
+      ["148399","3169289802","Feed Roller","Rollers","0","2288000","SR200"],
     ];
-    const csv  = [headers, ...sample].map(r => r.join(",")).join("\n");
-    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    const csv  = [headers, ...sample].map(r => r.join(";")).join("\n");
+    const blob = new Blob(["﻿sep=;\n" + csv], { type: "text/csv;charset=utf-8;" });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
     a.href     = url;
