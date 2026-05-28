@@ -25,6 +25,8 @@ import Button from "../../../components/ui/Button";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 import LogistikFormModal from "./LogistikFormModal";
 import ImportSparepartModal from "./ImportSparepartModal";
+import ImportAtkModal from "./ImportAtkModal";
+import ImportAsetDemoModal from "./ImportAsetDemoModal";
 import {
   LogisticsTable,
   SparepartsTable,
@@ -145,6 +147,8 @@ export default function LogistikInventori({
   const [editingItem, setEditingItem] = useState<BarangAktif | SparepartItem | ATKItem | AsetDemoItem | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; tab: ActiveTab } | null>(null);
   const [importModalOpen, setImportModalOpen] = useState(false);
+  const [importAtkOpen, setImportAtkOpen] = useState(false);
+  const [importDemoOpen, setImportDemoOpen] = useState(false);
 
   // ── Derived KPI data ──────────────────────────────────────────────────────
   const totalBarangCount = spareparts.length + atkList.length + assets.length;
@@ -299,13 +303,33 @@ export default function LogistikInventori({
               Ekspor Excel
             </Button>
 
-            {/* Tombol Import Excel — hanya muncul di tab Sparepart dan role MANAGER */}
+            {/* Tombol Import Excel — muncul di tab Sparepart, ATK, Aset Demo (MANAGER only) */}
             {activeTab === "spareparts" && isManager && (
               <Button
                 variant="secondary"
                 size="sm"
                 leftIcon={<FileUp size={14} />}
                 onClick={() => setImportModalOpen(true)}
+              >
+                Import Excel/CSV
+              </Button>
+            )}
+            {activeTab === "atk" && isManager && (
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<FileUp size={14} />}
+                onClick={() => setImportAtkOpen(true)}
+              >
+                Import Excel/CSV
+              </Button>
+            )}
+            {activeTab === "assets" && isManager && (
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<FileUp size={14} />}
+                onClick={() => setImportDemoOpen(true)}
               >
                 Import Excel/CSV
               </Button>
@@ -407,6 +431,26 @@ export default function LogistikInventori({
         onClose={() => setImportModalOpen(false)}
         onImported={async () => {
           setImportModalOpen(false);
+          if (onRefreshAllData) await onRefreshAllData();
+        }}
+      />
+
+      {/* ── Import Massal Modal (ATK) ───────────────────────────────────────── */}
+      <ImportAtkModal
+        isOpen={importAtkOpen}
+        onClose={() => setImportAtkOpen(false)}
+        onImported={async () => {
+          setImportAtkOpen(false);
+          if (onRefreshAllData) await onRefreshAllData();
+        }}
+      />
+
+      {/* ── Import Massal Modal (Aset Demo) ────────────────────────────────── */}
+      <ImportAsetDemoModal
+        isOpen={importDemoOpen}
+        onClose={() => setImportDemoOpen(false)}
+        onImported={async () => {
+          setImportDemoOpen(false);
           if (onRefreshAllData) await onRefreshAllData();
         }}
       />
